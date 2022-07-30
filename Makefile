@@ -1,14 +1,22 @@
 export PATH := $(PWD)/.venv/bin:$(PATH)
 export VIRTUAL_ENV := $(PWD)/.venv
-export PROJECT_NAME := $(shell ls */main.py | xargs dirname)
+export SRC_DIR := $(shell ls */main.py | xargs dirname)
 
 COLOR="\033[36m%-30s\033[0m %s\n"
+ENV_EXISTS=0
+ERROR_MSG="Create .env file (touch .env) and define the variable DATABASE_URL=postgresql://<user>:<pass>@<host>:<port>/<db_name>"
 
 .PHONY: .env .venv
 .DEFAULT_GOAL := help
 
-.env:
-	@echo 'PYTHONPATH="$(PROJECT_NAME)"' > .env
+ifeq ($(wildcard .env), .env)
+    include .env
+    export $(shell sed 's/=.*//' .env)
+    ENV_EXISTS=1
+endif
+
+.env-file:
+	@echo 'PYTHONPATH="$(SRC_DIR)"' > .env
 
 .venv:
 	@python3.10 -m venv $(VIRTUAL_ENV)
@@ -21,7 +29,7 @@ COLOR="\033[36m%-30s\033[0m %s\n"
 	@echo "make lint" > .git/hooks/pre-commit
 	@chmod +x .git/hooks/pre-commit
 
-install: .venv .env .install-hook  ## Create .venv and install dependencies.
+install: .venv .env-file .install-hook  ## Create .venv and install dependencies.
 	@if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
 reinstall: .rm-venv install ## Remove .venv if exists, create a new .venv and install dependencies.
@@ -44,13 +52,14 @@ format: ## Format code based in PEP8.
 	black --line-length=100 --target-version=py38 .
 
 coverage: ## Test code and check coverage from tests.
-	@pytest --cov-config=.coveragerc --cov=$(PROJECT_NAME) tests/ --cov-fail-under=90
+	@pytest --cov-config=.coveragerc --cov=$(SRC_DIR) tests/ --cov-fail-under=90
 
 test:  ## Execute all unity tests.
 	@pytest -s
 
 start: ## Start API in local for development.
-	uvicorn $(PROJECT_NAME).main:app --root-path . --reload
+	@if [ $(ENV_EXISTS) -eq 0 ]; then echo $(ERROR_MSG) && exit 1; fi
+	@uvicorn $(SRC_DIR).main:app --root-path . --reload
 
 help: ## Show documentation.
 	@for makefile_file in $(MAKEFILE_LIST); do \
