@@ -1,15 +1,16 @@
 from src.vector.schemas import InfoRequestSchema
+from src.vector.geometry import Geometry
+from src.vector.models import BrUf
 
 
 async def info(body: InfoRequestSchema):
+    geom = Geometry(body.geometry)
+    locality = await BrUf.locality(geom.wkt)
+
     return {
-        "type": "",
-        "length": 0.0,
-        "area": 0.0,
-        "centroid": {"lat": 0.0, "lng": 0.0},
-        "locality": [
-            {"country": "", "region": "", "city": ""},
-            {"country": "", "region": "", "city": ""},
-            {"country": "", "region": "", "city": ""},
-        ],
+        "type": geom.geom_type,
+        "length": geom.length,
+        "area": geom.area,
+        "centroid": geom.centroid,
+        **locality,
     }
