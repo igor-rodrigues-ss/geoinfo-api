@@ -1,16 +1,15 @@
 import os
+import pytest
 
-import testing.postgresql
+from tests.db import Database
+
+database_test = Database()
 
 from scripts.apply import apply
+from scripts.load_shapefile import load_shapefile
 
-print("Starting database...")
-
-postgresql = testing.postgresql.Postgresql()
-os.environ["DATABASE_URL"] = postgresql.url()
-
-print("Successful.")
-
+from src.vector.models import BrUf
+from src.db import Session
 from src.config import ROOT_DIR
 
 pytest_plugins = ["tests.plugins.base_fixtures"]
@@ -22,9 +21,20 @@ def get_file_from_fixtures(fname: str) -> str:
 
 def pytest_sessionstart(session):
     print("Apply migrations...")
-    apply(postgresql.url())
+    apply(database_test.postgresql.url())
     print("Successful.")
 
 
 def pytest_sessionfinish(session, exitstatus):
-    postgresql.stop()
+    database_test.stop()
+
+
+@pytest.fixture
+async def load_shapefile_data():
+    await load_shapefile(get_file_from_fixtures("southeast.zip"))
+
+    yield
+
+    async with Session() as sess:
+        await sess.execute(f"TRUNCATE TABLE {BrUf.__tablename__}")
+        await sess.commit()
