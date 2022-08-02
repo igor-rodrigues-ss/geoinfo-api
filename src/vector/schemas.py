@@ -1,25 +1,43 @@
+from typing import Any, Dict, List, Optional
 from pydantic import BaseModel
 
 
 class InfoRequestSchema(BaseModel):
-    geometry: str
+    geometry: str | Dict[Any, Any]
 
-    class Config:
-        schema_extra = {"example": {"geometry": "POINT (1 1)"}}
-
-
-class InfoResponseSchema(BaseModel):
     class Config:
         schema_extra = {
             "example": {
-                "type": "",
-                "length": 0.0,
-                "area": 0.0,
-                "centroid": {"lat": 0.0, "lng": 0.0},
+                "geometry": {
+                    "type": "Polygon",
+                    "coordinates": [
+                        [[-50.92, -19.95], [-50.94, -20.06], [-50.85, -20.03], [-50.92, -19.95]]
+                    ],
+                }
+            }
+        }
+
+
+class InfoResponseSchema(BaseModel):
+    type: str
+    length: float
+    area: float
+    centroid: Dict[Any, Any]
+    locality: Optional[List[Dict[str, str]]]
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "type": "Polygon",
+                "length": 27.51,
+                "area": 36392.62,
+                "centroid": {
+                    "type": "Point",
+                    "coordinates": [-50.903333333333336, -20.013333333333332],
+                },
                 "locality": [
-                    {"country": "", "region": "", "city": ""},
-                    {"country": "", "region": "", "city": ""},
-                    {"country": "", "region": "", "city": ""},
+                    {"acronym": "MG", "region": "Sudeste"},
+                    {"acronym": "SP", "region": "Sudeste"},
                 ],
             }
         }
