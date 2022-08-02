@@ -4,7 +4,9 @@ export SRC_DIR := $(shell ls */main.py | xargs dirname)
 
 COLOR="\033[36m%-30s\033[0m %s\n"
 ENV_EXISTS=0
-ERROR_MSG="Create .env file (touch .env) and define the variable DATABASE_URL=postgresql://<user>:<pass>@<host>:<port>/<db_name>"
+
+ERROR_MSG_DATABASE_URL="Define the variable DATABASE_URL=postgresql://<user>:<pass>@<host>:<port>/<db_name> in .env file"
+ERROR_MSG_ENV_NOT_FOUND="Create .env file (touch .env) and define the variable DATABASE_URL=postgresql://<user>:<pass>@<host>:<port>/<db_name>"
 
 .PHONY: .env .venv
 .DEFAULT_GOAL := help
@@ -14,6 +16,10 @@ ifeq ($(wildcard .env), .env)
     export $(shell sed 's/=.*//' .env)
     ENV_EXISTS=1
 endif
+
+.start-validation:
+	@if [ $(ENV_EXISTS) -eq 0 ]; then echo $(ERROR_MSG_ENV_NOT_FOUND) && exit 1; fi
+	@if [ ! $(shell grep DATABASE_URL .env) ]; then echo $(ERROR_MSG_DATABASE_URL) && exit 1; fi
 
 .env-file:
 	@echo 'PYTHONPATH="$(SRC_DIR)"' > .env
@@ -57,8 +63,7 @@ coverage: ## Test code and check coverage from tests.
 test:  ## Execute all unity tests.
 	@pytest -s
 
-start: ## Start API in local for development.
-	@if [ $(ENV_EXISTS) -eq 0 ]; then echo $(ERROR_MSG) && exit 1; fi
+start: .start-validation ## Start API in local for development.
 	@uvicorn $(SRC_DIR).main:app --root-path . --reload
 
 help: ## Show documentation.
