@@ -29,12 +29,16 @@ def pytest_sessionfinish(session, exitstatus):
     database_test.stop()
 
 
+async def truncate_br_uf():
+    async with Session() as sess:
+        await sess.execute(f"TRUNCATE TABLE {BrUf.__tablename__}")
+        await sess.commit()
+
+
 @pytest.fixture
 async def load_shapefile_data():
     await load_shapefile(get_file_from_fixtures("southeast.zip"))
 
     yield
 
-    async with Session() as sess:
-        await sess.execute(f"TRUNCATE TABLE {BrUf.__tablename__}")
-        await sess.commit()
+    await truncate_br_uf()
