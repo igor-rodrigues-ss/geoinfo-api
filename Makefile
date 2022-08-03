@@ -58,7 +58,7 @@ format: ## Format code based in PEP8.
 	black --line-length=100 --target-version=py38 .
 
 coverage: ## Test code and check coverage from tests.
-	@pytest --cov-config=.coveragerc --cov=$(SRC_DIR) tests/ --cov-fail-under=90
+	@pytest --cov-config=.coveragerc --cov-report term-missing --cov=$(SRC_DIR) tests/ --cov-fail-under=90
 
 test:  ## Execute all unity tests.
 	@pytest -s
