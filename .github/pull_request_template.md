@@ -7,6 +7,8 @@
 - [ ] Documentation
 - [ ] Bugfix
 - [ ] Refactor
+- [ ] New config
+- [ ] Update config
 
 ## Details
 
