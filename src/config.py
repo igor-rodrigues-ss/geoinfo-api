@@ -8,6 +8,8 @@ DATABASE_URL = os.environ["DATABASE_URL"]
 
 TESTING_MODE = int(os.environ.get("TESTING", "0"))
 
+TTL_SEARCH_IP = 30  # seconds
+
 SRID_WGS84 = 4326
 PRJ_ALBERS = (
     'PROJCS["Brazil / Albers Equal Area Conic (WGS84)",GEOGCS["WGS 84",'
