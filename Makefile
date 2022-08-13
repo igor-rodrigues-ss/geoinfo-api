@@ -64,7 +64,7 @@ test:  ## Execute all unity tests.
 	@pytest -s
 
 security: ## Run scripts for static security analysis
-	@echo ">>> [SAST: Ochrona]"
+	@echo ">>> [Ochrona]"
 	@ochrona -r requirements.txt
 
 start: .start-validation ## Start API in local for development.
