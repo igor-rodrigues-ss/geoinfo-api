@@ -63,6 +63,10 @@ coverage: ## Test code and check coverage from tests.
 test:  ## Execute all unity tests.
 	@pytest -s
 
+security: ## Run scripts for static security analysis
+	@echo ">>> [SAST: Ochrona]"
+	@ochrona -r requirements.txt
+
 start: .start-validation ## Start API in local for development.
 	@uvicorn $(SRC_DIR).main:app --root-path . --reload
 
