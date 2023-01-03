@@ -12,6 +12,7 @@ from src.vector.models import BrUf
 from src.db import Session
 from src.config import ROOT_DIR
 
+
 pytest_plugins = ["tests.plugins.base_fixtures"]
 
 

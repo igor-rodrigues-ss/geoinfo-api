@@ -5,7 +5,7 @@ from fastapi import status
 from fastapi.testclient import TestClient as ClientTest
 
 
-class TestSearchIP:
+class TestViewsSearchIP:
     @mock.patch("src.external.views.client", new_callable=AsyncMock)
     def test_search_ip_success(self, m_client: AsyncMock, client: ClientTest):
         search_ip = "192.168.10.12"

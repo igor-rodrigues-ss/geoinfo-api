@@ -1,6 +1,8 @@
 import logging
 
-from fastapi import Request, status
+from http import HTTPStatus
+
+from fastapi import Request
 from fastapi.responses import JSONResponse
 
 
@@ -15,5 +17,6 @@ async def catcher(request: Request, call_next):
         logger.exception(exc)
 
         return JSONResponse(
-            {"detail": "Internal Server Error"}, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
+            {"detail": HTTPStatus.INTERNAL_SERVER_ERROR.phrase},
+            status_code=HTTPStatus.INTERNAL_SERVER_ERROR.value,
         )
