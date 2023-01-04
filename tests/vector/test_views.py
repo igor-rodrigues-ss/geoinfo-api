@@ -3,8 +3,10 @@ import pytest
 
 from unittest import mock
 from http import HTTPStatus
+from unittest.mock import MagicMock
 
 from fastapi import status
+from fastapi.testclient import TestClient as ClientTest
 
 from tests.conftest import url_for
 
@@ -15,7 +17,7 @@ class TestViewsVectorInfo:
     def setup_class(cls):
         cls.url = url_for("check-vector-info")
 
-    def test_get_info_polygon(self, client):
+    def test_get_info_polygon(self, client: ClientTest):
         gj = {
             "geometry": {
                 "type": "Polygon",
@@ -41,7 +43,7 @@ class TestViewsVectorInfo:
             {"acronym": "SP", "region": "Sudeste"},
         ]
 
-    def test_get_info_linestring(self, client):
+    def test_get_info_linestring(self, client: ClientTest):
         gj = {
             "geometry": {
                 "type": "LineString",
@@ -70,7 +72,7 @@ class TestViewsVectorInfo:
             {"acronym": "RJ", "region": "Sudeste"},
         ]
 
-    def test_get_info_point(self, client):
+    def test_get_info_point(self, client: ClientTest):
         gj = {
             "geometry": {
                 "type": "Point",
@@ -94,7 +96,7 @@ class TestViewsVectorInfo:
         ]
 
     @mock.patch("src.vector.views.Geometry")
-    def test_get_info_error_500(self, m_Geometry, client):
+    def test_get_info_error_500(self, m_Geometry: MagicMock, client: ClientTest):
         m_Geometry.side_effect = Exception("Fake Exception")
 
         payload = {
