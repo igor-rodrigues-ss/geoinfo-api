@@ -8,7 +8,7 @@ ENV_EXISTS=0
 ERROR_MSG_DATABASE_URL="Define the variable DATABASE_URL=postgresql://<user>:<pass>@<host>:<port>/<db_name> in .env file"
 ERROR_MSG_ENV_NOT_FOUND="Create .env file (touch .env) and define the variable DATABASE_URL=postgresql://<user>:<pass>@<host>:<port>/<db_name>"
 
-.PHONY: .env .venv
+.PHONY: .env .venv deploy
 .DEFAULT_GOAL := help
 
 ifeq ($(wildcard .env), .env)
@@ -51,11 +51,11 @@ clean: ## Clean all caches file.
 	@find tests -name __pycache__ | xargs rm -rf
 
 lint: ## Apply lintings to ensure code quality.
-	black --line-length=100 --target-version=py38 --check .
-	flake8 --max-line-length=150 --ignore=E402,W503 --exclude .venv,dependencies,fixtures,src/geobuf --max-complexity 5
+	@black --line-length=100 --target-version=py38 --check .
+	@flake8 --max-line-length=150 --ignore=E402,W503 --exclude .venv,dependencies,fixtures,src/geobuf --max-complexity 5
 
 format: ## Format code based in PEP8.
-	black --line-length=100 --target-version=py38 .
+	@black --line-length=100 --target-version=py38 .
 
 coverage: ## Test code and check coverage from tests.
 	@pytest --cov-config=.coveragerc --cov-report term-missing --cov=$(SRC_DIR) tests/ --cov-fail-under=90
@@ -63,8 +63,15 @@ coverage: ## Test code and check coverage from tests.
 test:  ## Execute all unity tests.
 	@pytest -s
 
+security: ## Run scripts for static security analysis
+	@echo ">>> [Ochrona]"
+	@ochrona -r requirements.txt
+
 start: .start-validation ## Start API in local for development.
 	@uvicorn $(SRC_DIR).main:app --root-path . --reload
+
+deploy:
+	@cd deploy && docker compose build --no-cache && docker compose up && cd ..
 
 help: ## Show documentation.
 	@for makefile_file in $(MAKEFILE_LIST); do \
