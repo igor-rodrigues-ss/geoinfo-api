@@ -6,9 +6,15 @@ from http import HTTPStatus
 
 from fastapi import status
 
+from tests.conftest import url_for
+
 
 @pytest.mark.usefixtures("load_shapefile_data")
 class TestViewsVectorInfo:
+    @classmethod
+    def setup_class(cls):
+        cls.url = url_for("check-vector-info")
+
     def test_get_info_polygon(self, client):
         gj = {
             "geometry": {
@@ -18,7 +24,7 @@ class TestViewsVectorInfo:
                 ],
             }
         }
-        resp = client.post("/vector/info", data=json.dumps(gj))
+        resp = client.post(self.url, data=json.dumps(gj))
 
         assert resp.status_code == status.HTTP_200_OK
 
@@ -47,7 +53,7 @@ class TestViewsVectorInfo:
                 ],
             }
         }
-        resp = client.post("/vector/info", data=json.dumps(gj))
+        resp = client.post(self.url, data=json.dumps(gj))
 
         assert resp.status_code == status.HTTP_200_OK
 
@@ -97,7 +103,7 @@ class TestViewsVectorInfo:
                 "coordinates": [-41.93, -21.63],
             }
         }
-        resp = client.post("/vector/info", data=json.dumps(payload))
+        resp = client.post(self.url, data=json.dumps(payload))
 
         assert resp.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
 
