@@ -15,5 +15,5 @@ def mock_load_shapefile():
 
 @pytest.fixture(scope="session")
 def client() -> Generator[TestClient, None, None]:
-    with TestClient(app) as tc:
+    with TestClient(app, raise_server_exceptions=False) as tc:
         yield tc
