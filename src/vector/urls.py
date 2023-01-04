@@ -9,5 +9,8 @@ router = APIRouter()
 
 
 router.post(
-    "/info", response_model=InfoResponseSchema, responses={500: DEFAULT_INTERNAL_SERVER_ERROR}
+    "/info",
+    name="check-vector-info",
+    response_model=InfoResponseSchema,
+    responses={500: DEFAULT_INTERNAL_SERVER_ERROR},
 )(info)

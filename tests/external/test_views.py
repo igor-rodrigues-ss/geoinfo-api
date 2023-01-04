@@ -2,6 +2,7 @@ from unittest import mock
 from unittest.mock import MagicMock, AsyncMock
 
 from fastapi import status
+from tests.conftest import url_for
 from fastapi.testclient import TestClient as ClientTest
 
 
@@ -22,7 +23,9 @@ class TestViewsSearchIP:
         m_resp.json.return_value = {"ip": search_ip, **expected}
         m_client.get.return_value = m_resp
 
-        response = client.get(f"/external/ip?address={search_ip}")
+        url = url_for("get-external-ip")
+
+        response = client.get(f"{url}?address={search_ip}")
 
         assert response.status_code == status.HTTP_200_OK
         assert m_client.get.call_count == 1
