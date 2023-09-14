@@ -1,12 +1,14 @@
 import os
 import json
+import asyncio
+
 import shapefile
 
 from typing import Optional
 from zipfile import ZipFile
 from tempfile import TemporaryDirectory
 
-from src.config import FIXTURES_DIR
+from src.settings import FIXTURES_DIR, logger
 from src.vector.models import BrUf
 
 
@@ -47,6 +49,8 @@ async def _import_shp(path: str):
         properties = feature.record.as_dict()
         geometry = feature.shape.__geo_interface__
 
+        logger.info(f"Loading: {properties['NM_UF']}")
+
         await BrUf(
             cd_uf=properties["CD_UF"],
             nm_uf=properties["NM_UF"],
@@ -54,3 +58,7 @@ async def _import_shp(path: str):
             nm_regiao=properties["NM_REGIAO"],
             geometry=json.dumps(geometry),
         ).save()
+
+
+if __name__ == "__main__":
+    asyncio.run(load_shapefile())
