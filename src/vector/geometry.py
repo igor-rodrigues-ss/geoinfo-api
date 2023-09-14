@@ -5,7 +5,7 @@ from shapely.geometry.base import BaseGeometry
 
 from pyproj import Transformer, CRS
 
-from src.config import PRJ_ALBERS, SRID_WGS84
+from src.settings import PRJ_ALBERS, SRID_WGS84
 
 
 class Geometry:

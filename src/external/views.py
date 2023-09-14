@@ -3,7 +3,7 @@ from cachecall import cache
 from src.external.schemas import SeachIPResponseSchema
 from src.external.helper.client import client
 from src.external.helper.validator import validate_ip
-from src.config import TTL_SEARCH_IP
+from src.settings import TTL_SEARCH_IP
 
 
 @cache(ttl=TTL_SEARCH_IP)

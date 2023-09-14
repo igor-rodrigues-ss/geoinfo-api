@@ -44,6 +44,16 @@ sudo apt install python3.10-venv
 make install-dev
 ```
 
+#### Configure the environment variables
+```shell
+make migrations
+```
+
+#### Load the base data
+```
+make load-init
+```
+
 #### Start API in development mode
 ```shell
 make start
