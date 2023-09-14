@@ -8,7 +8,7 @@ ENV_EXISTS=0
 ERROR_MSG_DATABASE_URL="Define the variable DATABASE_URL=postgresql://<user>:<pass>@<host>:<port>/<db_name> in .env file"
 ERROR_MSG_ENV_NOT_FOUND="Create .env file (touch .env) and define the variable DATABASE_URL=postgresql://<user>:<pass>@<host>:<port>/<db_name>"
 
-.PHONY: .env .venv deploy
+.PHONY: .env .venv deploy migrations
 .DEFAULT_GOAL := help
 
 ifeq ($(wildcard .env), .env)
@@ -61,7 +61,7 @@ coverage: ## Test code and check coverage from tests.
 	@pytest --cov-config=.coveragerc --cov-report term-missing --cov=$(SRC_DIR) tests/ --cov-fail-under=90
 
 test:  ## Execute all unity tests.
-	@pytest -s
+	@pytest -v
 
 security: ## Run scripts for static security analysis
 	@echo ">>> [Ochrona]"
@@ -70,7 +70,13 @@ security: ## Run scripts for static security analysis
 start: .start-validation ## Start API in local for development.
 	@uvicorn $(SRC_DIR).main:app --root-path . --reload
 
-deploy:
+migrations: ## Run migrations.
+	@python scripts/apply.py $(DATABASE_URL)
+
+load-init: ## Load initial data.
+	@python -m scripts.load_shapefile
+
+deploy: ## Deploy API using docker.
 	@cd deploy && docker compose build --no-cache && docker compose up && cd ..
 
 help: ## Show documentation.

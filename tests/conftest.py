@@ -7,7 +7,7 @@ database_test = Database()
 
 from src.main import app
 from src.db import Session
-from src.config import ROOT_DIR
+from src.settings import ROOT_DIR
 from scripts.apply import apply
 from src.vector.models import BrUf
 
